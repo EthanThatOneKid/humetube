@@ -4,19 +4,23 @@ let contentTimestamp = null;
 
 setup();
 
-// Establish connection with background script.
-chrome.runtime.onMessage.addListener(handleBackgroundMessage);
-
-function setup() {
+async function setup() {
   // Set up expression recording.
-  const mediaCaptureElements = createMediaCaptureElements();
-  mediaCaptureElements?.forEach((el) => document.body.appendChild(el));
+  const mediaCaptureElements = await createMediaCaptureElements();
+  if (mediaCaptureElements !== undefined) {
+    for (const el of mediaCaptureElements) {
+      document.body.appendChild(el);
+    }
+  }
 
   // Set up timestamp recording.
   const video = document.querySelector(".video-stream");
   video.addEventListener("timeupdate", () => {
     contentTimestamp = video.currentTime;
   });
+
+  // Establish connection with background script.
+  chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 }
 
 function handleBackgroundMessage(request, sender, sendResponse) {
@@ -78,6 +82,7 @@ async function createMediaCaptureElements() {
       console.error(`An error occurred: ${err}`);
     });
 
+  let streaming = false;
   video.addEventListener(
     "canplay",
     () => {
@@ -95,6 +100,7 @@ async function createMediaCaptureElements() {
         video.setAttribute("height", height);
         canvas.setAttribute("width", width);
         canvas.setAttribute("height", height);
+        streaming = true;
       }
     },
     false,

@@ -1,6 +1,18 @@
 import { parseVideoID } from "./lib/youtube/index.js";
 import { createInterval, getState, updateState } from "./lib/humetube/index.js";
 
+// https://stackoverflow.com/a/11598753
+chrome.runtime.onInstalled.addListener(async () => {
+  for (const contentScript of chrome.runtime.getManifest().content_scripts) {
+    for (const tab of await chrome.tabs.query({ url: contentScript.matches })) {
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: contentScript.js,
+      });
+    }
+  }
+});
+
 chrome.tabs.onActivated.addListener(async (info) => {
   // When the user navigates to a non-YouTube page, clear the interval.
   const tabID = info.tabId;
