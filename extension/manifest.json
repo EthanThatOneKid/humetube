@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "HumeTube",
+  "description": "Browser extension crowd-sourcing YouTube video reactions with Hume AI.",
+  "version": "0.0.1",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://youtube.com/watch*",
+        "https://www.youtube.com/watch*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "type": "module",
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
