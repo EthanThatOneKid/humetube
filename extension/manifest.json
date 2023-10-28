@@ -18,7 +18,9 @@
   },
   "permissions": [
     "tabs",
-    "scripting"
+    "scripting",
+    "activeTab",
+    "tabCapture"
   ],
   "host_permissions": [
     "<all_urls>"

@@ -23,19 +23,16 @@ export function createInterval() {
 }
 
 function handleContentMessage(response) {
-  console.log({ response }); // TODO: Remove this. Use recordedEmotion.
-  const currentTimestamp = response.currentTimestamp;
-
   // Update the current timestamp if it has changed.
-  if (typeof currentTimestamp !== "number") {
+  if (typeof response.currentTimestamp !== "number") {
     return;
   }
 
-  const timestamp = Math.floor(currentTimestamp);
+  const timestamp = Math.floor(response.currentTimestamp);
   if (state.currentTimestamp !== timestamp) {
     state.currentTimestamp = timestamp;
-    // TODO: Take screenshot of their face and bring it via the response as well perhaps.
+    state.recordedEmotion = response.recordedEmotion;
+    // Make request to ingestion API sending the recordedEmotion and data.
     updateState(state);
-    console.log({ state, timestamp }); // TODO: Remove this.
   }
 }

@@ -44,12 +44,19 @@ function handleBackgroundMessage(request, sender, sendResponse) {
 
 function getPageData() {
   let recordedEmotion = null;
-  if (width && height) {
+  const canvas = document.querySelector(".humetube-camera-canvas");
+  const video = document.querySelector(".humetube-camera-video");
+  console.log({ width, height }); // TODO: Remove this.
+  if (width && height && canvas && video) {
     canvas.width = width;
     canvas.height = height;
+
     const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, width, height);
     ctx.drawImage(video, 0, 0, width, height);
+
     recordedEmotion = canvas.toDataURL("image/png");
+    console.log(recordedEmotion); // TODO: Remove this.
   }
 
   return { contentTimestamp, recordedEmotion };
@@ -72,11 +79,28 @@ async function createMediaCaptureElements() {
   canvas.classList.add("humetube-camera-canvas");
   canvas.style.display = "none";
 
+  // const [tab] = await chrome.tabs.query({
+  //   active: true,
+  //   lastFocusedWindow: true,
+  // });
+  // const chromeMediaSourceID = await chrome.tabCapture.getMediaStreamId({
+  //   consumerTabId: tab.id,
+  // });
   await navigator.mediaDevices
-    .getUserMedia({ video: true, audio: false })
+    .getUserMedia({
+      video: true,
+      //  {
+      //   mandatory: {
+      //     chromeMediaSource: "tab",
+      //     chromeMediaSourceId: chromeMediaSourceID,
+      //   },
+      // },
+      audio: false,
+    })
     .then((stream) => {
       video.srcObject = stream;
       video.play();
+      console.log({ video, stream }); // TODO: Remove this.
     })
     .catch((err) => {
       console.error(`An error occurred: ${err}`);
