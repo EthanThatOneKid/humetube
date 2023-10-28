@@ -15,7 +15,8 @@ chrome.tabs.onActivated.addListener(async (info) => {
     return;
   }
 
-  // When the user navigates to a YouTube page, update the tab ID.
+  // When the user navigates to a YouTube page, update the tab ID and video ID.
+  state.videoID = videoID;
   state.activeTabID = info.tabId;
 
   // If the interval is not already running, start it.

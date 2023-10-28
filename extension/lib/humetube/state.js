@@ -2,6 +2,7 @@ let backgroundState = {
   intervalID: null,
   activeTabID: null,
   currentTimestamp: null,
+  videoID: null,
   // TODO: Add screenshot of their face in data URI format.
 };
 
