@@ -18,6 +18,14 @@ video reactions with [**@HumeAI**](https://github.com/HumeAI).
 
 ### HTTP server
 
+```sh
+cd server
+```
+
+```sh
+deno task start
+```
+
 <!-- TODO: Set up HTTP server for development. -->
 
 ### Database
