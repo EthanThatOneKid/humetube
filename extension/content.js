@@ -1,3 +1,5 @@
+import { parseVideoID } from "./lib/youtube/index.js";
+
 const width = 320; // We will scale the photo width to this.
 let height; // This will be computed based on the input stream.
 let contentTimestamp = null;
@@ -21,6 +23,9 @@ async function setup() {
       contentTimestamp = event.currentTarget.currentTime;
     },
   );
+
+  // Render the recorded emotions timeline.
+  renderEmotionsTimeline();
 
   // Establish connection with background script.
   chrome.runtime.onMessage.addListener(handleBackgroundMessage);
@@ -114,4 +119,135 @@ async function createMediaCaptureElements() {
   );
 
   return [video, canvas];
+}
+
+async function renderEmotionsTimeline() {
+  // Get the active video ID.
+  const videoID = parseVideoID(window.location.href);
+  if (!videoID) {
+    return;
+  }
+
+  // Check the response status.
+  const response = await fetch(`https://humetube.deno.dev/emotions/${videoID}`);
+  if (!response.ok) {
+    return;
+  }
+
+  // Parse the JSON data.
+  const data = await response.json();
+  console.log(JSON.stringify(data, null, 2));
+
+  // Render the emotions timeline.
+  const container = document.createElement("div");
+  container.style.fontFamily = "Roboto, sans-serif";
+  container.style.height = "400px";
+  container.style.width = "400px";
+  container.style.border = "2px solid #f1f1f1";
+  container.style.borderRadius = "20px";
+  container.style.backgroundColor = "#212121";
+  container.style.color = "#fff";
+  container.style.overflowY = "scroll";
+  container.style.overflowX = "hidden";
+  container.style.position = "relative";
+
+  const title = document.createElement("h2");
+  title.textContent = "HumeTube Emotion Classifier";
+  title.style.position = "sticky";
+  title.style.top = "0";
+  title.style.borderRadius = "20px";
+  title.style.backgroundColor = "#212121";
+  title.style.margin = "0";
+  title.style.padding = "15px";
+  title.style.fontSize = "20px";
+
+  const table = document.createElement("table");
+  table.style.padding = "0 15px 0 15px";
+  table.style.fontSize = "12px";
+
+  const footer = document.createElement("h3");
+  footer.textContent = "Region (en)";
+  footer.style.position = "sticky";
+  footer.style.bottom = "0";
+  footer.style.borderRadius = "20px";
+  footer.style.backgroundColor = "#212121";
+  footer.style.padding = "15px";
+  footer.style.margin = "0";
+  footer.style.fontWeight = "normal";
+  footer.style.fontSize = "15px";
+
+  for (const emotion of data.emotions) {
+    const row = table.insertRow();
+    const cell1 = row.insertCell();
+    const cell2 = row.insertCell();
+    const cell3 = row.insertCell();
+    const cell4 = row.insertCell();
+
+    const anchor = document.createElement("a");
+    const url = new URL(window.location.href);
+    url.searchParams.set("t", emotion.timestamp);
+    anchor.href = url.href;
+    anchor.textContent = formatTime(emotion.timestamp);
+    cell1.appendChild(anchor);
+    cell2.textContent = emotion.name;
+
+    // Create a colored bar to represent emotion intensity
+    const intensityBar = document.createElement("div");
+    intensityBar.style.width = `${emotion.amplitude * 100}%`;
+    intensityBar.style.height = "10px";
+    intensityBar.style.backgroundColor = "#263850";
+    intensityBar.style.borderRadius = "4px";
+    cell3.appendChild(intensityBar);
+    cell3.style.width = "100%";
+
+    cell4.textContent = emotion.emoji;
+
+    anchor.style.textDecoration = "none";
+    anchor.style.color = "#3ea6ff";
+    anchor.style.backgroundColor = "#263850";
+    anchor.style.borderRadius = "4px";
+    anchor.style.padding = "1px 5px";
+    anchor.addEventListener("mouseover", () => {
+      anchor.style.textDecoration = "underline";
+    });
+    anchor.addEventListener("mouseout", () => {
+      anchor.style.textDecoration = "none";
+    });
+    cell1.style.paddingTop = "10px";
+    cell2.style.paddingTop = "10px";
+    cell3.style.paddingTop = "10px";
+    cell4.style.paddingTop = "10px";
+  }
+
+  container.appendChild(title);
+  container.appendChild(table);
+  container.appendChild(footer);
+  document.body.appendChild(container);
+}
+
+function formatTime(seconds) {
+  const timeSegments = [];
+
+  // Calculate hours, minutes, and remaining seconds
+  const hours = Math.floor(seconds / 3600);
+  seconds %= 3600;
+  const minutes = Math.floor(seconds / 60);
+  seconds %= 60;
+
+  // Push segments to the array if they are greater than 0
+  if (hours > 0) {
+    timeSegments.push(hours);
+  }
+  if (minutes > 0) {
+    timeSegments.push(minutes);
+  }
+  timeSegments.push(seconds);
+
+  // Convert segments to strings and pad with zeros if necessary
+  const formattedSegments = timeSegments.map((segment) => {
+    return segment < 10 ? `0${segment}` : `${segment}`;
+  });
+
+  return (formattedSegments.length === 1 ? "0:" : "") +
+    formattedSegments.join(":");
 }
