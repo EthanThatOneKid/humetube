@@ -200,6 +200,7 @@ async function renderEmotionsTimeline() {
     cell3.appendChild(intensityBar);
     cell3.style.width = "100%";
 
+    cell4.fontSize = `${emotion.amplitude * 14 + 2}px`;
     cell4.textContent = emotion.emoji;
 
     anchor.style.textDecoration = "none";
