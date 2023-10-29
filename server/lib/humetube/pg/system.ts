@@ -1,3 +1,31 @@
+import type { InferModel } from "humetube/deps.ts";
+import {
+  drizzle,
+  integer,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  varchar,
+} from "humetube/deps.ts";
+
+export type City = InferModel<typeof cities>;
+export type NewCity = InferModel<typeof cities, "insert">;
+
+const client = pg(/* connection string */);
+
+const db = drizzle(client);
+
+// Insert
+const newUser: NewUser = {
+  fullName: "John Doe",
+  phone: "+123456789",
+};
+const insertedUsers /* : User[] */ = await db.insert(users).values(newUser)
+  .returning();
+
+// ---
+
 import { ulid } from "humetube/deps.ts";
 import type { API, EmotionName } from "humetube/lib/hume/mod.ts";
 import { EMOTIONS } from "humetube/lib/hume/mod.ts";
@@ -188,6 +216,12 @@ interface Snapshot {
   timestamp: number;
 }
 
+const snapshotsTable = pgTable("snapshots", {
+  id: serial("id").primaryKey(),
+  videoID: text("video_id").notNull(),
+  timestamp: integer("timestamp").notNull(),
+});
+
 function makeSnapshotKey(ingestionID: string): Deno.KvKey {
   return [KvPrefix.SNAPSHOTS, ingestionID];
 }
@@ -206,3 +240,18 @@ function makePredictionKey(videoID: string, timestamp: number): Deno.KvKey {
 function makeAnalysisKey(videoID: string): Deno.KvKey {
   return [KvPrefix.ANALYSES, videoID];
 }
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  phone: varchar("phone", { length: 20 }).notNull(),
+  role: text("role", { enum: ["user", "admin"] }).default("user").notNull(),
+  cityId: integer("city_id").references(() => cities.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const cities = pgTable("cities", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+});
