@@ -134,50 +134,47 @@ function renderEmotionsTimeline(data) {
   container.style.fontFamily = "Roboto, sans-serif";
   container.style.maxHeight = "400px";
   container.style.width = "400px";
-  container.style.border = "1px solid #f1f1f1";
-  container.style.borderRadius = "20px";
+  container.style.border = "1px solid rgba(255,255,255,0.2)";
+  container.style.borderRadius = "12px";
   container.style.backgroundColor = "#212121";
   container.style.color = "#fff";
   container.style.overflowX = "hidden";
   container.style.position = "relative";
   container.style.backgroundImage = "linear-gradient(#212121, #000000)";
+  container.style.padding = "6px 0px";
 
   const summary = document.createElement("summary");
+  summary.style.width = "100%";
+  summary.style.backgroundColor = "#212121";
   const title = document.createElement("h2");
-  title.textContent = "HumeTube Emotion Classifier";
+  title.textContent = "Hume emotional timeline";
   title.style.position = "sticky";
   title.style.top = "0";
-  title.style.borderRadius = "20px";
-  title.style.backgroundColor = "#212121";
   title.style.margin = "0";
   title.style.padding = "15px";
   title.style.fontSize = "20px";
   summary.appendChild(title);
 
-  const box = document.createElement("div");
-  box.style.borderRadius = "10px";
-  box.style.minHeight = "100%";
-  box.style.minWidth = "100%";
-  box.style.padding = "6px 0px";
-
   const table = document.createElement("table");
   table.classList.add("humetube-emotions-table");
-  table.style.overflowY = "scroll";
-  table.style.width = "100%";
+  // table.style.overflowY = "scroll";
+  table.style.overflow = "auto";
+  table.style.width = "400px";
+  table.style.height = "100%";
   table.style.padding = "0 15px 0 15px";
   table.style.fontSize = "12px";
   table.style.borderRadius = "8px";
 
-  const footer = document.createElement("h3");
-  footer.textContent = "Region (en)";
-  footer.style.position = "sticky";
-  footer.style.bottom = "0";
-  footer.style.borderRadius = "20px";
-  footer.style.backgroundColor = "#212121";
-  footer.style.padding = "15px";
-  footer.style.margin = "0";
-  footer.style.fontWeight = "normal";
-  footer.style.fontSize = "15px";
+  // const footer = document.createElement("h3");
+  // footer.textContent = "Region (en)";
+  // footer.style.position = "sticky";
+  // footer.style.bottom = "0";
+  // footer.style.borderRadius = "0 0 12px 12px";
+  // footer.style.backgroundColor = "#212121";
+  // footer.style.padding = "15px";
+  // footer.style.margin = "0";
+  // footer.style.fontWeight = "normal";
+  // footer.style.fontSize = "15px";
 
   for (const emotion of data.emotions) {
     const row = table.insertRow();
@@ -225,9 +222,8 @@ function renderEmotionsTimeline(data) {
   }
 
   container.appendChild(summary);
-  box.appendChild(table);
-  container.appendChild(box);
-  container.appendChild(footer);
+  container.appendChild(table);
+  // container.appendChild(footer);
   document.querySelector("#secondary-inner").insertAdjacentElement(
     "afterbegin",
     container,

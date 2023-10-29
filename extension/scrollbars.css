@@ -12,3 +12,11 @@
     background-color: #888;
     border-radius: 5px;
 }
+
+details > summary {
+    cursor: pointer;
+    padding: .5rem 1rem;
+}
+.humetube-emotions-timeline >summary> * {
+    display: inline;
+}
