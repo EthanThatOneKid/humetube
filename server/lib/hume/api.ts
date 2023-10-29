@@ -61,20 +61,8 @@ export class API {
     const url = makeGetJobURL(jobID, this.apiURL);
     const response = await fetch(url, { headers });
     const results = await response.json();
-    return { results };
-  }
-
-  public async getJobs(): Promise<GetJobsResult> {
-    // Define the headers
-    const headers = new Headers({
-      "X-Hume-Api-Key": this.apiKey,
-      "accept": "application/json; charset=utf-8",
-    });
-
-    const url = makeCreateJobURL(this.apiURL);
-    const response = await fetch(url, { headers });
-    const data = await response.json();
-    return { data };
+    console.log({ results });
+    throw new Error("Method not implemented.");
   }
 }
 
@@ -89,89 +77,56 @@ export interface CreateJobResult {
  * GetJobResult is the result of getting a Hume job.
  */
 export interface GetJobResult {
-  results: {
-    source: {
-      type: string;
-      filename: string;
-      content_type: string;
-      md5sum: string;
-    };
-    results: {
-      predictions: {
-        file: string;
-        file_type: string;
-        models: {
-          face: {
-            grouped_predictions: {
-              id: string;
-              predictions: {
-                frame: number;
-                time: number;
-                prob: number;
-                box: {
-                  x: number;
-                  y: number;
-                  w: number;
-                  h: number;
-                };
-                emotions: {
-                  name: string;
-                  score: number;
-                }[];
-              }[];
-            }[];
-          };
-        };
-      }[];
-    };
-  }[];
+  job_id: string;
+  status: string;
+  predictions: PredictionItem[];
 }
 
 /**
  * GetJobsResult is the result of listing Hume jobs.
  */
 export interface GetJobsResult {
-  data: {
-    job_id: string;
-    request: {
-      callback_url: string | null;
-      files: {
-        content_type: string;
-        filename: string;
-        md5sum: string;
-      }[];
-      models: {
-        burst: null;
-        face: {
-          descriptions: null;
-          facs: null;
-          fps_pred: number;
-          identify_faces: boolean;
-          min_face_size: number;
-          prob_threshold: number;
-          save_faces: boolean;
-        };
-        facemesh: null;
-        language: null;
-        ner: null;
-        prosody: null;
-      };
-      notify: boolean;
-      registry_files: string[];
-      text: string[];
-      urls: string[];
-    };
-    state: {
-      created_timestamp_ms: number;
-      ended_timestamp_ms: number;
-      num_errors: number;
-      num_predictions: number;
-      started_timestamp_ms: number;
-      status: "COMPLETED" | "IN_PROGRESS" | "FAILED" | "QUEUED";
-    };
-    type: "INFERENCE";
-    user_id: string;
-  }[];
+  jobs: GetJobResult[];
+}
+
+interface EmotionPrediction {
+  name: string;
+  score: number;
+}
+
+interface Box {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+interface Prediction {
+  frame: number;
+  time: number;
+  prob: number;
+  box: Box;
+  emotions: EmotionPrediction[];
+}
+
+interface GroupedPrediction {
+  id: string;
+  predictions: Prediction[];
+}
+
+interface FaceModel {
+  metadata: null;
+  grouped_predictions: GroupedPrediction[];
+}
+
+interface Models {
+  face: FaceModel;
+}
+
+interface PredictionItem {
+  file: string;
+  file_type: string;
+  models: Models;
 }
 
 function makeCreateJobURL(apiURL = DEFAULT_API_URL) {

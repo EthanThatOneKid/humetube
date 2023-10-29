@@ -1,6 +1,7 @@
 import type { EmotionName, GetJobResult } from "humetube/lib/hume/api.ts";
 
 // TODO: Implement system interface in Postgres, deploy on CockroachDB serverless.
+// Reference: <https://orm.drizzle.team/docs/overview>.
 
 /**
  * SystemInterface is the HumeTube pipeline system interface.
