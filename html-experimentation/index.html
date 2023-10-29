@@ -54,6 +54,7 @@
                 const cell1 = row.insertCell();
                 const cell2 = row.insertCell();
                 const cell3 = row.insertCell();
+                const cell4 = row.insertCell();
 
                 const anchor = document.createElement("a");
                 const url = new URL(window.location.href);
@@ -62,7 +63,14 @@
                 anchor.textContent = formatTime(emotion.timestamp);
                 cell1.appendChild(anchor);
                 cell2.textContent = emotion.name;
-                cell3.textContent = emotion.emoji;
+
+                // Create a colored bar to represent emotion intensity
+                const intensityBar = document.createElement("div");
+                intensityBar.style.width = `${emotion.amplitude * 100}%`; // Set the width based on amplitude
+                intensityBar.style.height = "20px";
+                intensityBar.style.backgroundColor = "green";
+                cell3.appendChild(intensityBar);
+                cell4.textContent = emotion.emoji;
 
                 anchor.style.textDecoration = "none";
                 anchor.style.color = "#3ea6ff";
@@ -77,7 +85,8 @@
                 });
                 cell1.style.paddingTop = "10px";
                 cell2.style.paddingTop = "10px";
-                cell3.style.paddingTop = "10px";
+                // cell3.style.paddingTop = "10px";
+                cell4.style.paddingTop = "10px";
             }
             
             container.appendChild(title);
