@@ -131,7 +131,7 @@ function renderEmotionsTimeline(data) {
   const container = document.createElement("div");
   container.classList.add("humetube-emotions-timeline");
   container.style.fontFamily = "Roboto, sans-serif";
-  container.style.height = "400px";
+  container.style.maxHeight = "400px";
   container.style.width = "400px";
   container.style.border = "2px solid #f1f1f1";
   container.style.borderRadius = "20px";
@@ -140,7 +140,16 @@ function renderEmotionsTimeline(data) {
   container.style.overflowY = "scroll";
   container.style.overflowX = "hidden";
   container.style.position = "relative";
+  container.style.backgroundImage = "linear-gradient(#212121, #000000)";
+  const styleSheet = document.styleSheets[0];
+  if (styleSheet) {
+    styleSheet.insertRule(
+      ".humetube-emotions-timeline::-webkit-scrollbar { width: 10px; }",
+      0,
+    );
+  }
 
+  const summary = document.createElement("summary");
   const title = document.createElement("h2");
   title.textContent = "HumeTube Emotion Classifier";
   title.style.position = "sticky";
@@ -150,6 +159,7 @@ function renderEmotionsTimeline(data) {
   title.style.margin = "0";
   title.style.padding = "15px";
   title.style.fontSize = "20px";
+  summary.appendChild(title);
 
   const table = document.createElement("table");
   table.style.padding = "0 15px 0 15px";
