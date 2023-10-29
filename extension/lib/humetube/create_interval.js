@@ -1,4 +1,4 @@
-import { getState, updateState } from "./state.js";
+import { getState, stashSnapshot, updateState } from "./state.js";
 import { ingest } from "./ingest.js";
 
 /**
@@ -6,9 +6,9 @@ import { ingest } from "./ingest.js";
  * YouTube timestamp string from the active tab.
  */
 export function createInterval() {
-  const timesPerSecond = 1.2;
+  const timesPerSecond = 0.1; // 1.2;
   const interval = 1_000 / timesPerSecond;
-  const batchEvery = 20;
+  const batchEvery = 1;
   let intervalCount = 0;
   return setInterval(() => {
     const state = getState();
@@ -32,14 +32,13 @@ export function createInterval() {
 }
 
 function handleContentMessage(response) {
-  console.log({ response });
-
   // Update the current timestamp if it has changed.
-  if (!response || typeof response.currentTimestamp !== "number") {
+  if (!response || typeof response.contentTimestamp !== "number") {
     return;
   }
 
-  const timestamp = Math.floor(response.currentTimestamp);
+  const timestamp = Math.floor(response.contentTimestamp);
+  const state = getState();
   if (state.currentTimestamp !== timestamp) {
     state.currentTimestamp = timestamp;
     state.dataURI = response.dataURI;

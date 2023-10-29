@@ -31,13 +31,18 @@ export class API {
     }
 
     // Define the headers.
-    const headers = new Headers({ "X-Hume-Api-Key": this.apiKey });
+    console.log({ apiKey: this.apiKey });
+    const headers = new Headers({
+      "X-Hume-Api-Key": this.apiKey,
+      "accept": "application/json; charset=utf-8",
+      "content-type": "application/json; charset=utf-8",
+    });
 
     // Make the fetch request.
     const url = makeCreateJobURL(this.apiURL);
     const response = await fetch(url, {
       method: "POST",
-      headers: headers,
+      headers,
       body: formData,
     });
     if (response.ok) {
@@ -47,7 +52,7 @@ export class API {
       };
     }
 
-    throw new Error("Failed to create Hume job.");
+    throw new Error("Failed to create Hume job: " + await response.text());
   }
 
   public async getJob(jobID: string): Promise<GetJobResult> {

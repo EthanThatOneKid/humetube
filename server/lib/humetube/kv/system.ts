@@ -27,10 +27,9 @@ export class KvSystem implements SystemInterface {
       blobs.push(blob);
     }
 
+    // Create the Hume job.
+    console.log({ blobs });
     const result = await this.api.createJob(blobs);
-    if (!result) {
-      throw new Error("Failed to create Hume job.");
-    }
 
     // Store snapshots by ingestion ID.
     const commit = await this.kv.set(
@@ -51,12 +50,16 @@ export class KvSystem implements SystemInterface {
     };
   }
 
-  ingestPredictions(
+  public async ingestPredictions(
     request: IngestPredictionsRequest,
   ): Promise<IngestPredictionsResult> {
     // Get the snapshots by ingestion ID which is in the request.
     const ingestionID = request.job_id;
-    console.log({ ingestionID }, JSON.stringify(request, null, 2));
+    const snapshotsResult = await this.kv.get(makeSnapshotKey(ingestionID));
+    console.log(
+      { ingestionID, snapshotsResult },
+      JSON.stringify(request, null, 2),
+    );
 
     // for (const prediction of request.results) {
     //   const ingestionID = prediction.results.predictions;

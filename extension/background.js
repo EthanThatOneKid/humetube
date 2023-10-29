@@ -1,5 +1,6 @@
 import { parseVideoID } from "./lib/youtube/index.js";
 import { createInterval, getState, updateState } from "./lib/humetube/index.js";
+// import { ingest } from "./lib/humetube/ingest.js";
 
 // https://stackoverflow.com/a/11598753
 chrome.runtime.onInstalled.addListener(async () => {
@@ -24,6 +25,7 @@ chrome.tabs.onActivated.addListener(async (info) => {
     state.activeTabID = null;
     state.intervalID = null;
     updateState(state);
+    // ingest();
     return;
   }
 
