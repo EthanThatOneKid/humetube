@@ -10,20 +10,17 @@ export class API {
     private readonly apiURL = DEFAULT_API_URL,
   ) {}
 
-  public async createJob(
-    blobs: Blob[],
-  ): Promise<CreateJobResult> {
+  public async createJob(blobs: Blob[]): Promise<CreateJobResult> {
     // Create a FormData object.
     const formData = new FormData();
 
     // Add the JSON data.
-    formData.append(
-      "json",
-      JSON.stringify({
-        models: { face: {} },
-        callback_url: this.jobCompleteCallbackURL,
-      }),
-    );
+    const json = {
+      models: { face: {} },
+      callback_url: this.jobCompleteCallbackURL,
+    };
+    console.log({ json });
+    formData.append("json", JSON.stringify(json));
 
     // Append blobs to the FormData object.
     for (const blob of blobs) {
@@ -31,11 +28,9 @@ export class API {
     }
 
     // Define the headers.
-    console.log({ apiKey: this.apiKey });
     const headers = new Headers({
       "X-Hume-Api-Key": this.apiKey,
       "accept": "application/json; charset=utf-8",
-      "content-type": "application/json; charset=utf-8",
     });
 
     // Make the fetch request.
@@ -129,6 +124,20 @@ interface Models {
 }
 
 interface PredictionItem {
+  source: FileSource;
+  results: {
+    predictions: PredictionResultItem[];
+  };
+}
+
+interface FileSource {
+  type: string;
+  filename: string;
+  content_type: string;
+  md5sum: string;
+}
+
+interface PredictionResultItem {
   file: string;
   file_type: string;
   models: Models;

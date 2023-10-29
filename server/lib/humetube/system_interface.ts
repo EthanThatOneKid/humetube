@@ -38,13 +38,16 @@ export interface IngestSnapshotsRequest {
    */
   snapshots: {
     dataURI: string;
-    timestamp: number;
+    currentTimestamp: number;
     videoID: string;
     // TODO: Consider adding regional language.
   }[];
 }
 
 export interface IngestSnapshotsResult {
+  /**
+   * ingestionID is the ID of the ingestion job. This ID is a Hume job ID.
+   */
   ingestionID: string;
 }
 

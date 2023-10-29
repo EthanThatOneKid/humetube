@@ -8,7 +8,14 @@ await load({ export: true });
 const kv = await Deno.openKv();
 
 if (import.meta.main) {
-  main();
+  // main();
+  messAround();
+}
+
+async function messAround() {
+  const system = makeSystem();
+  const result = await system.analyze({ videoID: "K5o7U1WrJXc" });
+  console.log({ result });
 }
 
 function main() {
@@ -59,9 +66,9 @@ async function handleIngestSnapshots(request: Request): Promise<Response> {
 
 async function handleIngestPredictions(request: Request): Promise<Response> {
   const predictions = await request.json();
-  console.log({ predictions });
   const system = makeSystem();
   const result = await system.ingestPredictions(predictions);
+  console.log("Ingested predictions.", { result });
   return new Response(JSON.stringify(result), { status: 200 });
 }
 
@@ -75,9 +82,9 @@ function makeSystem(
   jobCompleteCallbackURL?: string,
   api?: API,
 ): SystemInterface {
-  const apiURL = Deno.env.get("HUME_API_URL");
+  const apiURL = Deno.env.get("HUMETUBE_API_URL");
   if (!apiURL) {
-    throw new Error("HUME_API_URL not set.");
+    throw new Error("HUMETUBE_API_URL not set.");
   }
 
   if (!jobCompleteCallbackURL) {
