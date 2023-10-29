@@ -123,10 +123,13 @@ async function createMediaCaptureElements() {
 }
 
 function renderEmotionsTimeline(data) {
-  console.log({ data });
+  if (document.querySelector(".humetube-emotions-timeline")) {
+    return;
+  }
 
   // Render the emotions timeline.
   const container = document.createElement("div");
+  container.classList.add("humetube-emotions-timeline");
   container.style.fontFamily = "Roboto, sans-serif";
   container.style.height = "400px";
   container.style.width = "400px";

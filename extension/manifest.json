@@ -20,7 +20,8 @@
     "tabs",
     "scripting",
     "activeTab",
-    "tabCapture"
+    "tabCapture",
+    "webNavigation"
   ],
   "host_permissions": [
     "<all_urls>"

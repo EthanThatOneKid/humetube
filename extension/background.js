@@ -15,7 +15,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   }
 });
 
-chrome.tabs.onActivated.addListener(async (info) => {
+chrome.tabs.onActivated.addListener(syncWithContentScriptasync);
+chrome.tabs.onCreated.addListener(syncWithContentScriptasync);
+chrome.tabs.onUpdated.addListener(syncWithContentScriptasync);
+chrome.webNavigation.onCompleted.addListener(syncWithContentScriptasync);
+
+async function syncWithContentScriptasync(info) {
   // When the user navigates to a non-YouTube page, clear the interval.
   const tabID = info.tabId;
   const tab = await chrome.tabs.get(tabID);
@@ -30,8 +35,6 @@ chrome.tabs.onActivated.addListener(async (info) => {
       if (!response.ok) {
         return;
       }
-
-      
 
       // Parse the JSON data.
       const data = await response.json();
@@ -65,7 +68,7 @@ chrome.tabs.onActivated.addListener(async (info) => {
     // Update the state.
     updateState(state);
   }
-});
+}
 
 function sendDataToContentScript(tabID, data) {
   chrome.tabs.sendMessage(tabID, {
