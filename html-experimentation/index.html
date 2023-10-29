@@ -33,7 +33,6 @@
             title.style.fontSize = "20px";
             
             const table = document.createElement("table");
-            table.style.width = "100%";
             table.style.padding = "0 15px 0 15px";
             table.style.fontSize = "12px";
 
@@ -66,10 +65,13 @@
 
                 // Create a colored bar to represent emotion intensity
                 const intensityBar = document.createElement("div");
-                intensityBar.style.width = `${emotion.amplitude * 100}%`; // Set the width based on amplitude
-                intensityBar.style.height = "20px";
-                intensityBar.style.backgroundColor = "green";
+                intensityBar.style.width = `${emotion.amplitude * 100}%`;
+                intensityBar.style.height = "10px";
+                intensityBar.style.backgroundColor = "#263850";
+                intensityBar.style.borderRadius = "4px";
                 cell3.appendChild(intensityBar);
+                cell3.style.width="100%";
+
                 cell4.textContent = emotion.emoji;
 
                 anchor.style.textDecoration = "none";
@@ -85,7 +87,7 @@
                 });
                 cell1.style.paddingTop = "10px";
                 cell2.style.paddingTop = "10px";
-                // cell3.style.paddingTop = "10px";
+                cell3.style.paddingTop = "10px";
                 cell4.style.paddingTop = "10px";
             }
             
