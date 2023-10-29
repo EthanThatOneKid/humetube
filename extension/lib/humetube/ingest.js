@@ -1,6 +1,6 @@
 import { snapshotBatch } from "./state.js";
 
-const API_URL = "https://d9fb-199-115-241-199.ngrok-free.app";
+const API_URL = "https://humetube.deno.dev";
 
 export async function ingest() {
   const snapshots = snapshotBatch();

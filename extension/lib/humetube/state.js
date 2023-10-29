@@ -20,7 +20,6 @@ export function updateState(newBackgroundState) {
 
 export function stashSnapshot() {
   snapshots.push({ ...backgroundState });
-  console.log({ snapshots }); // TODO: Remove this!
 }
 
 /**

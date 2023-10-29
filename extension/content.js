@@ -34,12 +34,10 @@ function handleBackgroundMessage(request, sender, sendResponse) {
   const isAdPresent =
     document.querySelector(".ytp-ad-preview-container") !== null;
   if (isAdPresent) {
-    console.log("early return"); // TODO: Remove this.
     return;
   }
 
   const pageData = getPageData();
-  console.log({ pageData }); // TODO: Remove this.
   sendResponse(pageData);
 }
 
@@ -84,7 +82,7 @@ async function createMediaCaptureElements() {
     .then((stream) => {
       video.srcObject = stream;
       video.play();
-      console.log({ video, stream }); // TODO: Remove this.
+      console.log({ video, stream });
     })
     .catch((err) => {
       console.error(`An error occurred: ${err}`);

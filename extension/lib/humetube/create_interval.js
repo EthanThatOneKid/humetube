@@ -43,7 +43,6 @@ function handleContentMessage(response) {
     state.currentTimestamp = timestamp;
     state.dataURI = response.dataURI;
     updateState(state);
-    console.log({ state }); // TODO: Remove this!
     stashSnapshot();
   }
 }
