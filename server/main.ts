@@ -26,10 +26,16 @@ function main() {
   );
 }
 
-function handleQueueEvent(event: unknown) {
+async function handleQueueEvent(event: unknown) {
   const { channel, videoID } = event as { channel: string; videoID: string };
   if (channel === "analyze-predictions") {
     const system = makeSystem();
+    const recentAnalysis = await system.getAnalysis({ videoID })
+      .catch(() => null);
+    if (!recentAnalysis||recentAnalysis.lastUpdatedAt > Date.now() - 10 * MINUTE) {
+      return;
+    }
+
     system.analyze({ videoID });
     return;
   }

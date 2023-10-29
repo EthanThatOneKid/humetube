@@ -1,5 +1,3 @@
-import { parseVideoID } from "./lib/youtube/index.js";
-
 const width = 320; // We will scale the photo width to this.
 let height; // This will be computed based on the input stream.
 let contentTimestamp = null;
@@ -24,26 +22,29 @@ async function setup() {
     },
   );
 
-  // Render the recorded emotions timeline.
-  renderEmotionsTimeline();
-
   // Establish connection with background script.
   chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 }
 
 function handleBackgroundMessage(request, sender, sendResponse) {
-  if (request.action !== "getPageData") {
-    return;
-  }
+  switch (request.action) {
+    case "getPageData": {
+      const isAdPresent =
+        document.querySelector(".ytp-ad-preview-container") !== null;
+      if (isAdPresent) {
+        return;
+      }
 
-  const isAdPresent =
-    document.querySelector(".ytp-ad-preview-container") !== null;
-  if (isAdPresent) {
-    return;
-  }
+      const pageData = getPageData();
+      sendResponse(pageData);
+      break;
+    }
 
-  const pageData = getPageData();
-  sendResponse(pageData);
+    case "renderEmotionsTimeline": {
+      renderEmotionsTimeline(request.data);
+      break;
+    }
+  }
 }
 
 function getPageData() {
@@ -121,25 +122,14 @@ async function createMediaCaptureElements() {
   return [video, canvas];
 }
 
-async function renderEmotionsTimeline() {
-  // Get the active video ID.
-  const videoID = parseVideoID(window.location.href);
-  if (!videoID) {
+function renderEmotionsTimeline(data) {
+  if (document.querySelector(".humetube-emotions-timeline")) {
     return;
   }
-
-  // Check the response status.
-  const response = await fetch(`https://humetube.deno.dev/emotions/${videoID}`);
-  if (!response.ok) {
-    return;
-  }
-
-  // Parse the JSON data.
-  const data = await response.json();
-  console.log(JSON.stringify(data, null, 2));
 
   // Render the emotions timeline.
   const container = document.createElement("div");
+  container.classList.add("humetube-emotions-timeline");
   container.style.fontFamily = "Roboto, sans-serif";
   container.style.height = "400px";
   container.style.width = "400px";
@@ -206,7 +196,7 @@ async function renderEmotionsTimeline() {
     anchor.style.textDecoration = "none";
     anchor.style.color = "#3ea6ff";
     anchor.style.backgroundColor = "#263850";
-    anchor.style.borderRadius = "4px";
+    anchor.style.borderRadius = "1px";
     anchor.style.padding = "1px 5px";
     anchor.addEventListener("mouseover", () => {
       anchor.style.textDecoration = "underline";
@@ -223,7 +213,10 @@ async function renderEmotionsTimeline() {
   container.appendChild(title);
   container.appendChild(table);
   container.appendChild(footer);
-  document.body.appendChild(container);
+  document.querySelector("#secondary-inner").insertAdjacentElement(
+    "afterbegin",
+    container,
+  );
 }
 
 function formatTime(seconds) {
