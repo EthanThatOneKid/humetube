@@ -54,7 +54,10 @@ export interface IngestSnapshotsResult {
 export type IngestPredictionsRequest = GetJobResult;
 
 export interface IngestPredictionsResult {
-  success: boolean;
+  /**
+   * videoIDs are the video IDs of the ingested predictions.
+   */
+  videoIDs: string[];
 }
 
 export interface AnalyzeRequest {
@@ -70,6 +73,11 @@ export interface GetAnalysisRequest {
 }
 
 export interface GetAnalysisResult {
+  /**
+   * lastUpdatedAt is the UTC timestamp of the last time the analysis was updated.
+   */
+  lastUpdatedAt: number;
+
   /**
    * emotions are a list of collected human emotions.
    */

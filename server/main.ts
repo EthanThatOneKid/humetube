@@ -3,22 +3,19 @@ import { API } from "humetube/lib/hume/mod.ts";
 import type { SystemInterface } from "humetube/lib/humetube/mod.ts";
 import { KvSystem } from "humetube/lib/humetube/kv/mod.ts";
 
+const MINUTE = 60_000;
+
 await load({ export: true });
 
 const kv = await Deno.openKv();
 
 if (import.meta.main) {
-  // main();
-  messAround();
-}
-
-async function messAround() {
-  const system = makeSystem();
-  const result = await system.analyze({ videoID: "K5o7U1WrJXc" });
-  console.log({ result });
+  main();
 }
 
 function main() {
+  kv.listenQueue(handleQueueEvent);
+
   Deno.serve(
     {
       onListen({ port }) {
@@ -27,6 +24,15 @@ function main() {
     },
     handleRequest,
   );
+}
+
+function handleQueueEvent(event: unknown) {
+  const { channel, videoID } = event as { channel: string; videoID: string };
+  if (channel === "analyze-predictions") {
+    const system = makeSystem();
+    system.analyze({ videoID });
+    return;
+  }
 }
 
 async function handleRequest(request: Request): Promise<Response> {
@@ -68,7 +74,14 @@ async function handleIngestPredictions(request: Request): Promise<Response> {
   const predictions = await request.json();
   const system = makeSystem();
   const result = await system.ingestPredictions(predictions);
-  console.log("Ingested predictions.", { result });
+  for (const videoID of result.videoIDs) {
+    // Enqueue analysis of this video in 10 minutes.
+    kv.enqueue(
+      { channel: "analyze-predictions", videoID },
+      { delay: 10 * MINUTE },
+    );
+  }
+
   return new Response(JSON.stringify(result), { status: 200 });
 }
 

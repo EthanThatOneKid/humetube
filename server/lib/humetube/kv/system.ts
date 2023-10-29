@@ -1,5 +1,6 @@
 import { ulid } from "humetube/deps.ts";
-import type { API } from "humetube/lib/hume/mod.ts";
+import type { API, EmotionName } from "humetube/lib/hume/mod.ts";
+import { EMOTIONS } from "humetube/lib/hume/mod.ts";
 import type {
   AnalyzeRequest,
   AnalyzeResult,
@@ -59,6 +60,7 @@ export class KvSystem implements SystemInterface {
     request: IngestPredictionsRequest,
   ): Promise<IngestPredictionsResult> {
     // Get the snapshots by ingestion ID which is in the request.
+    const videoIDs = new Set<string>();
     const ingestionID = request.job_id;
     const snapshotsResult = await this.kv.get<{ snapshots: Snapshot[] }>(
       makeSnapshotKey(ingestionID),
@@ -87,6 +89,7 @@ export class KvSystem implements SystemInterface {
             const topEmotion = prediction.emotions
               .reduce((a, b) => a.score > b.score ? a : b);
 
+            videoIDs.add(snapshot.videoID);
             result.push({
               videoID: snapshot.videoID,
               timestamp: snapshot.timestamp,
@@ -107,15 +110,37 @@ export class KvSystem implements SystemInterface {
       }
     }
 
-    return { success: true };
+    return { videoIDs: Array.from(videoIDs) };
   }
 
   public async analyze(request: AnalyzeRequest): Promise<AnalyzeResult> {
-    const it = await this.kv.list({
+    const it = await this.kv.list<Prediction[]>({
       prefix: [KvPrefix.PREDICTIONS, request.videoID],
     });
-    for await (const prediction of it) {
-      console.log({ prediction });
+    const data = new Map<number, Prediction>();
+    for await (const predictions of it) {
+      for (const prediction of predictions.value) {
+        const existing = data.get(prediction.timestamp);
+        if (existing && existing.confidence > prediction.confidence) {
+          continue;
+        }
+
+        data.set(prediction.timestamp, prediction);
+      }
+    }
+
+    // Store analysis by video ID.
+    const commit = await this.kv.set(
+      makeAnalysisKey(request.videoID),
+      {
+        emotions: Array.from(data.values())
+          .sort((a, b) => a.timestamp - b.timestamp)
+          .map(fromPrediction),
+        lastUpdatedAt: Date.now(),
+      },
+    );
+    if (!commit.ok) {
+      throw new Error("Failed to store analysis.");
     }
 
     return { success: true };
@@ -124,8 +149,26 @@ export class KvSystem implements SystemInterface {
   public async getAnalysis(
     request: GetAnalysisRequest,
   ): Promise<GetAnalysisResult> {
-    throw new Error("Method not implemented.");
+    const result = await this.kv.get<GetAnalysisResult>(
+      makeAnalysisKey(request.videoID),
+    );
+    if (!result.value) {
+      throw new Error("Failed to get analysis.");
+    }
+
+    return result.value;
   }
+}
+
+function fromPrediction(p: Prediction): GetAnalysisResult["emotions"][number] {
+  const name = p.emotion as EmotionName;
+  const emoji = EMOTIONS[name as EmotionName];
+  return {
+    name,
+    emoji,
+    amplitude: p.confidence,
+    timestamp: p.timestamp,
+  };
 }
 
 /**
