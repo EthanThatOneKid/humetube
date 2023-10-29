@@ -1,6 +1,6 @@
 import { snapshotBatch } from "./state.js";
 
-const API_URL = "https://96f2-2600-387-f-4b10-00-1.ngrok-free.app";
+const API_URL = "https://1e9c-107-115-29-1.ngrok-free.app";
 
 export async function ingest() {
   const snapshots = snapshotBatch();
@@ -14,7 +14,7 @@ export async function ingest() {
     `${API_URL}/ingest-snapshots`,
     { method: "POST", body },
   );
-  const result = await response.json();
+  const result = await response.text();
   console.log({ result });
   return result;
 }

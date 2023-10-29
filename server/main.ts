@@ -75,12 +75,26 @@ function makeSystem(
   jobCompleteCallbackURL?: string,
   api?: API,
 ): SystemInterface {
-  jobCompleteCallbackURL ??= `${Deno.env.get(
-    "HUMETUBE_API_URL",
-  )!}/ingest-predictions`;
-  api ??= new API(
-    Deno.env.get("HUME_API_KEY")!,
-    jobCompleteCallbackURL,
-  );
+  const apiURL = Deno.env.get("HUME_API_URL");
+  if (!apiURL) {
+    throw new Error("HUME_API_URL not set.");
+  }
+
+  if (!jobCompleteCallbackURL) {
+    jobCompleteCallbackURL = `${apiURL}/ingest-predictions`;
+  }
+
+  if (!api) {
+    const apiKey = Deno.env.get("HUME_API_KEY");
+    if (!apiKey) {
+      throw new Error("HUME_API_KEY not set.");
+    }
+
+    api = new API(
+      apiKey,
+      jobCompleteCallbackURL,
+    );
+  }
+
   return new KvSystem(api, kv);
 }

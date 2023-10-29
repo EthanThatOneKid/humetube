@@ -1,5 +1,5 @@
-const width = 320; // We will scale the photo width to this
-let height = NaN; // This will be computed based on the input stream
+const width = 320; // We will scale the photo width to this.
+let height; // This will be computed based on the input stream.
 let contentTimestamp = null;
 let streaming = false;
 
@@ -14,6 +14,14 @@ async function setup() {
     }
   }
 
+  // Set up timestamp recording.
+  document.querySelector(".video-stream").addEventListener(
+    "timeupdate",
+    (event) => {
+      contentTimestamp = event.currentTarget.currentTime;
+    },
+  );
+
   // Establish connection with background script.
   chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 }
@@ -23,9 +31,9 @@ function handleBackgroundMessage(request, sender, sendResponse) {
     return;
   }
 
-  const adIsPresent =
+  const isAdPresent =
     document.querySelector(".ytp-ad-preview-container") !== null;
-  if (adIsPresent) {
+  if (isAdPresent) {
     console.log("early return"); // TODO: Remove this.
     return;
   }
@@ -39,12 +47,7 @@ function getPageData() {
   let dataURI = null;
   const canvas = document.querySelector(".humetube-camera-canvas");
   const video = document.querySelector(".humetube-camera-video");
-  console.log({
-    width,
-    height,
-    canvas,
-    video,
-  });
+  height ??= video.videoHeight / (video.videoWidth / width);
   if (width && height && canvas && video) {
     canvas.width = width;
     canvas.height = height;
@@ -53,8 +56,7 @@ function getPageData() {
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(video, 0, 0, width, height);
 
-    dataURI = canvas.toDataURL("image/png");
-    console.log("Updated dataURI"); // TODO: Remove this.
+    dataURI = canvas.toDataURL("image/jpeg");
   }
 
   return { contentTimestamp, dataURI };
@@ -68,11 +70,6 @@ async function createMediaCaptureElements() {
   const video = document.createElement("video");
   video.classList.add("humetube-camera-video");
   video.style.display = "none";
-
-  // Set up timestamp recording.
-  video.addEventListener("timeupdate", () => {
-    contentTimestamp = video.currentTime;
-  });
 
   if (document.querySelector(".humetube-camera-canvas")) {
     return;
@@ -96,22 +93,24 @@ async function createMediaCaptureElements() {
   video.addEventListener(
     "canplay",
     () => {
-      if (!streaming) {
-        height = video.videoHeight / (video.videoWidth / width);
-
-        // Firefox currently has a bug where the height can't be read from
-        // the video, so we will make assumptions if this happens.
-
-        if (isNaN(height)) {
-          height = width / (4 / 3);
-        }
-
-        video.setAttribute("width", width);
-        video.setAttribute("height", height);
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-        streaming = true;
+      if (streaming) {
+        return;
       }
+
+      height = video.videoHeight / (video.videoWidth / width);
+
+      // Firefox currently has a bug where the height can't be read from
+      // the video, so we will make assumptions if this happens.
+
+      if (isNaN(height)) {
+        height = width / (4 / 3);
+      }
+
+      video.setAttribute("width", width);
+      video.setAttribute("height", height);
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", height);
+      streaming = true;
     },
     false,
   );
