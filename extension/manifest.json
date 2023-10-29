@@ -9,7 +9,8 @@
         "https://youtube.com/watch*",
         "https://www.youtube.com/watch*"
       ],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "css": ["scrollbars.css"]
     }
   ],
   "background": {

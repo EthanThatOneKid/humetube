@@ -15,12 +15,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   }
 });
 
-chrome.tabs.onActivated.addListener(syncWithContentScriptasync);
-chrome.tabs.onCreated.addListener(syncWithContentScriptasync);
-chrome.tabs.onUpdated.addListener(syncWithContentScriptasync);
-chrome.webNavigation.onCompleted.addListener(syncWithContentScriptasync);
+chrome.tabs.onActivated.addListener(syncWithContentScript);
+chrome.tabs.onCreated.addListener(syncWithContentScript);
+chrome.tabs.onUpdated.addListener(syncWithContentScript);
+chrome.webNavigation.onCompleted.addListener(syncWithContentScript);
 
-async function syncWithContentScriptasync(info) {
+async function syncWithContentScript(info) {
   // When the user navigates to a non-YouTube page, clear the interval.
   const tabID = info.tabId;
   const tab = await chrome.tabs.get(tabID);

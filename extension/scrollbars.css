@@ -1,0 +1,14 @@
+.humetube-emotions-table::-webkit-scrollbar { 
+    width: 10px; 
+    background-color: #333;
+}
+
+.humetube-emotions-table::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 5px;
+}
+
+.humetube-emotions-table::-webkit-scrollbar-track {
+    background-color: #888;
+    border-radius: 5px;
+}

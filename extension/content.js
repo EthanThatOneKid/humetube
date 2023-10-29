@@ -128,26 +128,19 @@ function renderEmotionsTimeline(data) {
   }
 
   // Render the emotions timeline.
-  const container = document.createElement("div");
+  const container = document.createElement("details");
+  container.open = true;
   container.classList.add("humetube-emotions-timeline");
   container.style.fontFamily = "Roboto, sans-serif";
   container.style.maxHeight = "400px";
   container.style.width = "400px";
-  container.style.border = "2px solid #f1f1f1";
+  container.style.border = "1px solid #f1f1f1";
   container.style.borderRadius = "20px";
   container.style.backgroundColor = "#212121";
   container.style.color = "#fff";
-  container.style.overflowY = "scroll";
   container.style.overflowX = "hidden";
   container.style.position = "relative";
   container.style.backgroundImage = "linear-gradient(#212121, #000000)";
-  const styleSheet = document.styleSheets[0];
-  if (styleSheet) {
-    styleSheet.insertRule(
-      ".humetube-emotions-timeline::-webkit-scrollbar { width: 10px; }",
-      0,
-    );
-  }
 
   const summary = document.createElement("summary");
   const title = document.createElement("h2");
@@ -161,9 +154,19 @@ function renderEmotionsTimeline(data) {
   title.style.fontSize = "20px";
   summary.appendChild(title);
 
+  const box = document.createElement("div");
+  box.style.borderRadius = "20px";
+  box.style.height = "100%";
+  box.style.width = "100%";
+  box.style.padding = "6px 0px";
+
   const table = document.createElement("table");
+  table.classList.add("humetube-emotions-table");
+  table.style.overflowY = "scroll";
+  table.style.width = "100%";
   table.style.padding = "0 15px 0 15px";
   table.style.fontSize = "12px";
+  table.style.borderRadius = "8px";
 
   const footer = document.createElement("h3");
   footer.textContent = "Region (en)";
@@ -200,13 +203,14 @@ function renderEmotionsTimeline(data) {
     cell3.appendChild(intensityBar);
     cell3.style.width = "100%";
 
-    cell4.fontSize = `${emotion.amplitude * 14 + 2}px`;
+    cell4.style.fontSize = `${emotion.amplitude * 22 + 2}px`;
+    cell4.style.textAlign = "center";
     cell4.textContent = emotion.emoji;
 
     anchor.style.textDecoration = "none";
     anchor.style.color = "#3ea6ff";
     anchor.style.backgroundColor = "#263850";
-    anchor.style.borderRadius = "1px";
+    anchor.style.borderRadius = "4px";
     anchor.style.padding = "1px 5px";
     anchor.addEventListener("mouseover", () => {
       anchor.style.textDecoration = "underline";
@@ -220,8 +224,9 @@ function renderEmotionsTimeline(data) {
     cell4.style.paddingTop = "10px";
   }
 
-  container.appendChild(title);
-  container.appendChild(table);
+  container.appendChild(summary);
+  box.appendChild(table);
+  container.appendChild(box);
   container.appendChild(footer);
   document.querySelector("#secondary-inner").insertAdjacentElement(
     "afterbegin",
