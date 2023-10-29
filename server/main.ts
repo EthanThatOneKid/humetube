@@ -32,7 +32,9 @@ async function handleQueueEvent(event: unknown) {
     const system = makeSystem();
     const recentAnalysis = await system.getAnalysis({ videoID })
       .catch(() => null);
-    if (!recentAnalysis||recentAnalysis.lastUpdatedAt > Date.now() - 10 * MINUTE) {
+    if (
+      !recentAnalysis || recentAnalysis.lastUpdatedAt > Date.now() - 10 * MINUTE
+    ) {
       return;
     }
 

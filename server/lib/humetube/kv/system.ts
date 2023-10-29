@@ -118,8 +118,10 @@ export class KvSystem implements SystemInterface {
       prefix: [KvPrefix.PREDICTIONS, request.videoID],
     });
     const data = new Map<number, Prediction>();
+    let snapshotsAnalyzed = 0;
     for await (const predictions of it) {
       for (const prediction of predictions.value) {
+        snapshotsAnalyzed++;
         const existing = data.get(prediction.timestamp);
         if (existing && existing.confidence > prediction.confidence) {
           continue;
@@ -137,6 +139,7 @@ export class KvSystem implements SystemInterface {
           .sort((a, b) => a.timestamp - b.timestamp)
           .map(fromPrediction),
         lastUpdatedAt: Date.now(),
+        snapshotsAnalyzed,
       },
     );
     if (!commit.ok) {

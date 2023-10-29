@@ -79,6 +79,11 @@ export interface GetAnalysisResult {
   lastUpdatedAt: number;
 
   /**
+   * snapshotsAnalyzed is the number of snapshots analyzed.
+   */
+  snapshotsAnalyzed: number;
+
+  /**
    * emotions are a list of collected human emotions.
    */
   emotions: {
