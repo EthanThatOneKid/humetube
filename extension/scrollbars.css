@@ -3,7 +3,7 @@
     background-color: #333;
 }
 
-.humetube-emotions-table::-webkit-scrollbar-thumb {
+.humetube-emotions-table:hover::-webkit-scrollbar-thumb {
     background-color: #333;
     border-radius: 5px;
 }
@@ -17,6 +17,7 @@ details > summary {
     cursor: pointer;
     padding: .5rem 1rem;
 }
-.humetube-emotions-timeline >summary> * {
+
+.humetube-emotions-timeline > summary > * {
     display: inline;
 }

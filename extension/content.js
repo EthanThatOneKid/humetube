@@ -157,24 +157,15 @@ function renderEmotionsTimeline(data) {
 
   const table = document.createElement("table");
   table.classList.add("humetube-emotions-table");
-  // table.style.overflowY = "scroll";
   table.style.overflow = "auto";
   table.style.width = "400px";
   table.style.height = "100%";
   table.style.padding = "0 15px 0 15px";
   table.style.fontSize = "12px";
   table.style.borderRadius = "8px";
-
-  // const footer = document.createElement("h3");
-  // footer.textContent = "Region (en)";
-  // footer.style.position = "sticky";
-  // footer.style.bottom = "0";
-  // footer.style.borderRadius = "0 0 12px 12px";
-  // footer.style.backgroundColor = "#212121";
-  // footer.style.padding = "15px";
-  // footer.style.margin = "0";
-  // footer.style.fontWeight = "normal";
-  // footer.style.fontSize = "15px";
+  table.style.overflowY = "scroll";
+  table.style.scrollbarGutter = "stable";
+  table.style.scrollbarColor = "#3ea6ff #212121";
 
   for (const emotion of data.emotions) {
     const row = table.insertRow();
