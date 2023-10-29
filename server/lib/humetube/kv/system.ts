@@ -54,6 +54,10 @@ export class KvSystem implements SystemInterface {
   ingestPredictions(
     request: IngestPredictionsRequest,
   ): Promise<IngestPredictionsResult> {
+    // Get the snapshots by ingestion ID which is in the request.
+    const ingestionID = request.job_id;
+    console.log({ ingestionID }, JSON.stringify(request, null, 2));
+
     // for (const prediction of request.results) {
     //   const ingestionID = prediction.results.predictions;
     // }

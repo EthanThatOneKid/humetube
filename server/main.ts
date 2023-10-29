@@ -44,7 +44,7 @@ async function handleRequest(request: Request): Promise<Response> {
     .exec(url)
     ?.pathname.groups?.videoID ?? "";
   if (request.method === "GET" && videoID) {
-    return new Response("Not found", { status: 404 });
+    return await handleGetAnalysis(videoID);
   }
 
   return new Response("Not found", { status: 404 });
@@ -59,16 +59,26 @@ async function handleIngestSnapshots(request: Request): Promise<Response> {
 
 async function handleIngestPredictions(request: Request): Promise<Response> {
   const predictions = await request.json();
+  console.log({ predictions });
   const system = makeSystem();
   const result = await system.ingestPredictions(predictions);
   return new Response(JSON.stringify(result), { status: 200 });
 }
 
-function makeSystem(): SystemInterface {
-  const jobCompleteCallbackURL = `${Deno.env.get(
+async function handleGetAnalysis(videoID: string): Promise<Response> {
+  const system = makeSystem();
+  const result = await system.getAnalysis({ videoID });
+  return new Response(JSON.stringify(result), { status: 200 });
+}
+
+function makeSystem(
+  jobCompleteCallbackURL?: string,
+  api?: API,
+): SystemInterface {
+  jobCompleteCallbackURL ??= `${Deno.env.get(
     "HUMETUBE_API_URL",
   )!}/ingest-predictions`;
-  const api = new API(
+  api ??= new API(
     Deno.env.get("HUME_API_KEY")!,
     jobCompleteCallbackURL,
   );

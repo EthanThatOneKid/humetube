@@ -1,6 +1,7 @@
 const width = 320; // We will scale the photo width to this
-let height = 0; // This will be computed based on the input stream
+let height = NaN; // This will be computed based on the input stream
 let contentTimestamp = null;
+let streaming = false;
 
 setup();
 
@@ -13,12 +14,6 @@ async function setup() {
     }
   }
 
-  // Set up timestamp recording.
-  const video = document.querySelector(".video-stream");
-  video.addEventListener("timeupdate", () => {
-    contentTimestamp = video.currentTime;
-  });
-
   // Establish connection with background script.
   chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 }
@@ -27,8 +22,6 @@ function handleBackgroundMessage(request, sender, sendResponse) {
   if (request.action !== "getPageData") {
     return;
   }
-
-  console.log("Message received from background script."); // TODO: Remove this.
 
   const adIsPresent =
     document.querySelector(".ytp-ad-preview-container") !== null;
@@ -43,10 +36,15 @@ function handleBackgroundMessage(request, sender, sendResponse) {
 }
 
 function getPageData() {
-  let recordedEmotion = null;
+  let dataURI = null;
   const canvas = document.querySelector(".humetube-camera-canvas");
   const video = document.querySelector(".humetube-camera-video");
-  console.log({ width, height }); // TODO: Remove this.
+  console.log({
+    width,
+    height,
+    canvas,
+    video,
+  });
   if (width && height && canvas && video) {
     canvas.width = width;
     canvas.height = height;
@@ -55,11 +53,11 @@ function getPageData() {
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(video, 0, 0, width, height);
 
-    recordedEmotion = canvas.toDataURL("image/png");
-    console.log(recordedEmotion); // TODO: Remove this.
+    dataURI = canvas.toDataURL("image/png");
+    console.log("Updated dataURI"); // TODO: Remove this.
   }
 
-  return { contentTimestamp, recordedEmotion };
+  return { contentTimestamp, dataURI };
 }
 
 async function createMediaCaptureElements() {
@@ -71,6 +69,11 @@ async function createMediaCaptureElements() {
   video.classList.add("humetube-camera-video");
   video.style.display = "none";
 
+  // Set up timestamp recording.
+  video.addEventListener("timeupdate", () => {
+    contentTimestamp = video.currentTime;
+  });
+
   if (document.querySelector(".humetube-camera-canvas")) {
     return;
   }
@@ -79,24 +82,8 @@ async function createMediaCaptureElements() {
   canvas.classList.add("humetube-camera-canvas");
   canvas.style.display = "none";
 
-  // const [tab] = await chrome.tabs.query({
-  //   active: true,
-  //   lastFocusedWindow: true,
-  // });
-  // const chromeMediaSourceID = await chrome.tabCapture.getMediaStreamId({
-  //   consumerTabId: tab.id,
-  // });
   await navigator.mediaDevices
-    .getUserMedia({
-      video: true,
-      //  {
-      //   mandatory: {
-      //     chromeMediaSource: "tab",
-      //     chromeMediaSourceId: chromeMediaSourceID,
-      //   },
-      // },
-      audio: false,
-    })
+    .getUserMedia({ video: true, audio: false })
     .then((stream) => {
       video.srcObject = stream;
       video.play();
@@ -106,7 +93,6 @@ async function createMediaCaptureElements() {
       console.error(`An error occurred: ${err}`);
     });
 
-  let streaming = false;
   video.addEventListener(
     "canplay",
     () => {

@@ -3,8 +3,10 @@ let backgroundState = {
   activeTabID: null,
   currentTimestamp: null,
   videoID: null,
-  // TODO: Add screenshot of their face in data URI format.
+  dataURI: null,
 };
+
+const snapshots = [];
 
 export function getState() {
   return backgroundState;
@@ -14,4 +16,17 @@ export function updateState(newBackgroundState) {
   backgroundState = typeof state === "function"
     ? newBackgroundState(backgroundState)
     : newBackgroundState;
+}
+
+export function stashSnapshot() {
+  snapshots.push({ ...backgroundState });
+  console.log({ snapshots }); // TODO: Remove this!
+}
+
+/**
+ * snapshotBatch returns all the snapshots taken since the last time this
+ * function was called and empties the snapshot queue.
+ */
+export function snapshotBatch() {
+  return snapshots.splice(0, snapshots.length);
 }

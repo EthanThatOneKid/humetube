@@ -4,8 +4,11 @@
     "udd": "deno run -r --allow-read=. --allow-write=. --allow-net https://deno.land/x/udd/main.ts deps.ts && deno task lock",
     "lock": "deno cache --lock=deno.lock --lock-write deps.ts",
     "all": "deno task udd && deno lint && deno fmt",
-    "start": "deno run -A main.ts",
-    "generate-fake-analysis": "deno run -A tasks/generate_fake_analysis.ts"
+    "start": "deno run -A --unstable main.ts",
+    "ngrok-start": "ngrok http 8000",
+    "generate-fake-analysis": "deno run -A tasks/generate_fake_analysis.ts",
+    "callback-server": "deno run -A tasks/callback_server.ts",
+    "ngrok-callback-server": "ngrok http 8000"
   },
   "imports": {
     "humetube/": "./"
