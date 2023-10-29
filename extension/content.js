@@ -155,9 +155,9 @@ function renderEmotionsTimeline(data) {
   summary.appendChild(title);
 
   const box = document.createElement("div");
-  box.style.borderRadius = "20px";
-  box.style.height = "100%";
-  box.style.width = "100%";
+  box.style.borderRadius = "10px";
+  box.style.minHeight = "100%";
+  box.style.minWidth = "100%";
   box.style.padding = "6px 0px";
 
   const table = document.createElement("table");
