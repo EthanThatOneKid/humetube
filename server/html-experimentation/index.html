@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Experimentation</title>
+</head>
+<body>
+    <script>
+        document.addEventListener("DOMContentLoaded", setup);
+        
+        async function setup() {
+            const container = document.createElement("div");
+            container.style.fontFamily = "Roboto, sans-serif";
+            container.style.height = "400px";
+            container.style.width = "400px";
+            container.style.border = "2px solid #f1f1f1";
+            container.style.borderRadius = "20px";
+            container.style.backgroundColor = "#212121";
+            container.style.color = "#fff";
+            container.style.overflowY = "scroll";
+            container.style.overflowX = "hidden";
+            container.style.position = "relative";
+            
+            const title = document.createElement("h2");
+            title.textContent = "HumeTube Emotion Classifier";
+            title.style.position = "sticky";
+            title.style.top = "0";
+            title.style.borderRadius = "20px";
+            title.style.backgroundColor = "#212121";
+            title.style.margin = "0";
+            title.style.padding = "15px";
+            title.style.fontSize = "20px";
+            
+            const table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.padding = "0 15px 0 15px";
+            table.style.fontSize = "12px";
+
+            // Edit style of cell1
+            // const cell1 = document.querySelector("table tr td:first-child");
+            // cell1.style.textDecoration = "none";
+
+            const footer = document.createElement("h3");
+            footer.textContent = "Region (en)";
+            footer.style.position = "sticky";
+            footer.style.bottom = "0";
+            footer.style.borderRadius = "20px";
+            footer.style.backgroundColor = "#212121";
+            footer.style.padding = "15px";
+            footer.style.margin = "0";
+            footer.style.fontWeight = "normal";
+            footer.style.fontSize = "15px";
+
+            const emotions = fakeData.emotions; // Get the emotions array from fakeData
+
+            for (const emotion of emotions) {
+                const row = table.insertRow();
+                const cell1 = row.insertCell();
+                const cell2 = row.insertCell();
+                const cell3 = row.insertCell();
+
+                const anchor = document.createElement("a");
+                const url = new URL(window.location.href);
+                url.searchParams.set("t", emotion.timestamp);
+                anchor.href = url.href;
+                anchor.textContent = formatTime(emotion.timestamp);
+                cell1.appendChild(anchor);
+                cell2.textContent = emotion.name;
+                cell3.textContent = emotion.emoji;
+
+                anchor.style.textDecoration = "none";
+                anchor.style.color = "#3ea6ff";
+                // Apply styles to cell1, cell2, and cell3
+                
+                cell1.style.backgroundColor = "#263850";
+                cell1.style.padding = "5px";
+            }
+            container.appendChild(title);
+            container.appendChild(table);
+            container.appendChild(footer);
+            document.body.appendChild(container);
+        }
+
+        function formatTime(seconds) {
+            const timeSegments = [];
+            
+            // Calculate hours, minutes, and remaining seconds
+            const hours = Math.floor(seconds / 3600);
+            seconds %= 3600;
+            const minutes = Math.floor(seconds / 60);
+            seconds %= 60;
+
+            // Push segments to the array if they are greater than 0
+            if (hours > 0) {
+                timeSegments.push(hours);
+            }
+            if (minutes > 0) {
+                timeSegments.push(minutes);
+            }
+            timeSegments.push(seconds);
+
+            // Convert segments to strings and pad with zeros if necessary
+            const formattedSegments = timeSegments.map(segment => {
+                return segment < 10 ? `0${segment}` : `${segment}`;
+            });
+
+            return (formattedSegments.length === 1 ? "0:" :"")+ formattedSegments.join(':');
+        }
+
+        const fakeData = {
+            "emotions": [
+                {
+                "timestamp": 3,
+                "amplitude": 0.7284674647472298,
+                "name": "Doubt",
+                "emoji": "🤨"
+                },
+                {
+                "timestamp": 5,
+                "amplitude": 0.9802948786839747,
+                "name": "Satisfaction",
+                "emoji": "😌"
+                },
+                {
+                "timestamp": 6,
+                "amplitude": 0.597319143322171,
+                "name": "Envy",
+                "emoji": "😠"
+                },
+                {
+                "timestamp": 9,
+                "amplitude": 0.05809078753695118,
+                "name": "Boredom",
+                "emoji": "😴"
+                },
+                {
+                "timestamp": 10,
+                "amplitude": 0.19115046396458912,
+                "name": "Craving",
+                "emoji": "😋"
+                },
+                {
+                "timestamp": 12,
+                "amplitude": 0.6430823704297919,
+                "name": "Surprise (positive)",
+                "emoji": "😲"
+                },
+                {
+                "timestamp": 15,
+                "amplitude": 0.1143394128324049,
+                "name": "Calmness",
+                "emoji": "😌"
+                },
+                {
+                "timestamp": 16,
+                "amplitude": 0.07539865934128698,
+                "name": "Surprise (positive)",
+                "emoji": "😲"
+                },
+                {
+                "timestamp": 17,
+                "amplitude": 0.0324232753331557,
+                "name": "Empathic Pain",
+                "emoji": "😢"
+                },
+                {
+                "timestamp": 19,
+                "amplitude": 0.7946203676749577,
+                "name": "Embarrassment",
+                "emoji": "😖"
+                },
+                {
+                "timestamp": 21,
+                "amplitude": 0.913232597807861,
+                "name": "Aesthetic",
+                "emoji": "🎨"
+                },
+                {
+                "timestamp": 22,
+                "amplitude": 0.062356361813415306,
+                "name": "Awkwardness",
+                "emoji": "😳"
+                },
+                {
+                "timestamp": 24,
+                "amplitude": 0.8718033128487528,
+                "name": "Nostalgia",
+                "emoji": "😢"
+                },
+                {
+                "timestamp": 27,
+                "amplitude": 0.6508636388870044,
+                "name": "Gratitude",
+                "emoji": "🙏"
+                },
+                {
+                "timestamp": 28,
+                "amplitude": 0.5968217999118235,
+                "name": "Entrancement",
+                "emoji": "😮"
+                },
+                {
+                "timestamp": 30,
+                "amplitude": 0.9168142149517964,
+                "name": "Contempt",
+                "emoji": "😏"
+                },
+                {
+                "timestamp": 31,
+                "amplitude": 0.850862934855644,
+                "name": "Contemplation",
+                "emoji": "🤔"
+                },
+                {
+                "timestamp": 34,
+                "amplitude": 0.8680607417872463,
+                "name": "Disgust",
+                "emoji": "🤢"
+                },
+                {
+                "timestamp": 37,
+                "amplitude": 0.6622167229941043,
+                "name": "Entrancement",
+                "emoji": "😮"
+                },
+                {
+                "timestamp": 400,
+                "amplitude": 0.42854280770736386,
+                "name": "Amusement",
+                "emoji": "😄"
+                }
+            ]
+            };
+    </script>
+</body>
+</html>
