@@ -77,6 +77,11 @@ etc.).
 
 ![image](https://github.com/EthanThatOneKid/humetube/assets/31261035/76ad08a6-1129-48cb-a034-fc3a42afde8e)
 
+> **NOTE**
+>
+> PII is not present in this data pipeline as the Hume API returns only the
+> calculated emotions discarding the video frames.
+
 ## Development
 
 ### Extension
